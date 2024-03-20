@@ -1,5 +1,7 @@
 // import crypto from 'crypto';
+import dotenv from 'dotenv';
 import nodeMailer from "nodemailer";
+dotenv.config()
 
 class Service {
     async sentMail(payload) {
