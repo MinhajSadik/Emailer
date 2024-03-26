@@ -1,3 +1,4 @@
+import { log } from "console";
 import fs from "fs";
 import handlebars from "handlebars";
 import path, { dirname } from "path";
@@ -17,16 +18,17 @@ class Controller {
         const { emails, CC, BCC } = req.body;
 
         try {
-            const sendEmailPromises = emails.map(email => {
-                const trackingPixelUrl = MailService.generateTrackingPixelUrl(email);
+            const sendEmailPromises = emails.map((email, i) => {
 
-                console.log(trackingPixelUrl)
+                const trackingPixelUrl = MailService.generateTrackingPixelUrl(i);
 
                 const sendDataToHtml = {
                     name: "Little Programmers...",
                     trackingPixelUrl,
                 };
 
+                log(trackingPixelUrl)
+                
                 const templateData = docTemplate(sendDataToHtml);
                 const options = {
                     email,
@@ -39,11 +41,10 @@ class Controller {
                 return MailService.sentMail(options);
             });
 
-            const results = await Promise.all(sendEmailPromises);
+            await Promise.all(sendEmailPromises);
 
             res.status(200).json({
                 message: "Emails have been sent",
-                data: results
             });
 
         } catch (error) {
@@ -55,72 +56,35 @@ class Controller {
 
 
     async trackMail(req, res) {
-        const { emailID } = req.query;
-        console.log(`Email with ID ${emailID} was opened at ${new Date()}`);
+        try {
+            const { emailID } = req.query;
+            log(`Email with ID ${emailID} was opened at ${new Date()}`);
+    
+            const pixel = Buffer.from(
+                'R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==',
+                'base64'
+            );
+    
+            res.writeHead(200, {
+                'Content-Type': 'image/gif',
+                'Content-Length': pixel.length,
+            });
+    
+            await new Promise((resolve, reject) => {
+                res.end(pixel, () => {
+                    resolve();
+                });
+            });
 
-        const pixel = Buffer.from(
-            'R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==',
-            'base64',
-        );
-        res.writeHead(200, {
-            'Content-Type': 'image/gif',
-            'Content-Length': pixel.length,
-        });
-        res.end(pixel);
-    }
-
-
-    // async trackMail(req, res) {
-    //     try {
-    //         const { emailID } = req.query;
-    //         console.log(`Email with ID ${emailID} was opened at ${new Date()}`);
-    
-    //         const pixel = Buffer.from(
-    //             'R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==',
-    //             'base64'
-    //         );
-    
-    //         res.writeHead(200, {
-    //             'Content-Type': 'image/gif',
-    //             'Content-Length': pixel.length,
-    //         });
-    
-    //         await new Promise((resolve, reject) => {
-    //             res.end(pixel, () => {
-    //                 resolve();
-    //             });
-    //         });
-    //     } catch (error) {
-    //         console.error("Error occurred while tracking mail:", error);
-    //         res.status(500).end();
-    //     }
-    // }    
-   
-    
-    // async trackMail(req, res) {
-    //     const pixelBuffer = Buffer.from(
-    //         'R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==',
-    //         'base64'
-    //     );
-
-    //     try {
-    //         const { emailID } = req.query;
-    //         console.log(`Email with ID ${emailID} was opened at ${new Date()}`);
-    
-    //         res.writeHead(200, {
-    //             'Content-Type': 'image/gif',
-    //             'Content-Length': pixelBuffer.length,
-    //             'Cache-Control': 'no-cache, no-store, must-revalidate', // Prevent caching
-    //             'Pragma': 'no-cache',
-    //             'Expires': '0'
-    //         });
-    
-    //         res.end(pixelBuffer);
-    //     } catch (error) {
-    //         console.error("Error occurred while tracking mail:", error);
-    //         res.status(500).end();
-    //     }
-    // }
+            return await MailService.saveMailInfo({
+                log: `Email with ID (${emailID}) was opened at ${new Date()}`,
+                emailID
+            })
+        } catch (error) {
+            console.error("Error occurred while tracking mail:", error.message);
+            res.status(500).end();
+        }
+    }    
     
 }
 

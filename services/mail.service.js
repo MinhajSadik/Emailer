@@ -1,6 +1,8 @@
 // import crypto from 'crypto';
 import dotenv from 'dotenv';
 import nodeMailer from "nodemailer";
+import { MailInfo } from '../models/mail.model.js';
+
 dotenv.config()
 
 class Service {
@@ -35,9 +37,18 @@ class Service {
         // return crypto.randomBytes(16).toString('hex');
     }
 
-    // async saveMail(payload) {
-    //     return await Subscriber.create(payload);
+    // async mailLog(emailID) {
+    //     return new Promise((resolve, reject) => {
+    //         setTimeout(() => {
+    //             console.log(`Email ID ${emailID} logged successfully.`);
+    //             resolve(); 
+    //         }, 100); 
+    //     });
     // }
+
+    async saveMailInfo(payload) {
+        return await MailInfo.create(payload);
+    }
 }
 
 
