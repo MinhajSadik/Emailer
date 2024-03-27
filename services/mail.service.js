@@ -21,7 +21,7 @@ class Service {
 
         const mailOptions = {
             from: process.env.SMPT_MAIL,
-            to: payload.email,
+            to: payload.emailID,
             cc: payload.CC,
             bcc: payload.BCC,
             subject: payload.subject,
@@ -33,8 +33,8 @@ class Service {
     }
 
     generateTrackingPixelUrl(emailID) {
-        return `http://localhost:5000/api/v1/track/open?emailID=${emailID}`;
         // return crypto.randomBytes(16).toString('hex');
+        return `https://emailer-k7j7hvszs-minhajsadiks-projects.vercel.app/api/v1/track/open?emailID=${emailID}`;
     }
 
     // async mailLog(emailID) {
