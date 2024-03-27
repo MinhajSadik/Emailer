@@ -34,7 +34,7 @@ class Service {
 
     generateTrackingPixelUrl(emailID) {
         // return crypto.randomBytes(16).toString('hex');
-        return `https://emailer-k7j7hvszs-minhajsadiks-projects.vercel.app/api/v1/track/open?emailID=${emailID}`;
+        return `https://emailer-mcwhr0xx7-realtime-pizza-app.vercel.app/api/v1/track/open?emailID=${emailID}`;
     }
 
     // async mailLog(emailID) {
