@@ -17,11 +17,6 @@ class Controller {
     async sendMail(req, res) {
         const { emails, CC, BCC } = req.body;
     
-        // Respond to the client immediately
-        res.status(200).json({
-            message: "Email sending process has been initiated",
-        });
-    
         emails.forEach(async (emailID) => {
             try {
                 const trackingPixelUrl = MailService.generateTrackingPixelUrl(emailID);
@@ -41,6 +36,11 @@ class Controller {
                 };
     
                 await MailService.sentMail(options);
+
+                // Respond to the client immediately
+                res.status(200).json({
+                    message: "Email sending process has been initiated",
+                });
     
             } catch (error) {
                 console.error(`Error sending email to ${emailID}:`, error.message);
