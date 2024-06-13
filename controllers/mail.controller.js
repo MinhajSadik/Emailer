@@ -17,9 +17,9 @@ class Controller {
     async sendMail(req, res) {
         const { emails, CC, BCC } = req.body;
     
-        emails.forEach(async (emailID) => {
+        emails.forEach(async (emailID, i) => {
             try {
-                const trackingPixelUrl = MailService.generateTrackingPixelUrl(emailID);
+                const trackingPixelUrl = MailService.generateTrackingPixelUrl(`${emailID}+${i}`);
     
                 const sendDataToHtml = {
                     name: "Little Programmers...",
@@ -37,9 +37,8 @@ class Controller {
     
                 await MailService.sentMail(options);
 
-                // Respond to the client immediately
                 res.status(200).json({
-                    message: "Email sending process has been initiated",
+                    message: "The email has been sent successfully",
                 });
     
             } catch (error) {
@@ -67,9 +66,10 @@ class Controller {
         (async () => {
             try {
                 await MailService.saveMailInfo({
-                    log: `Email with ID (${emailID}) was opened at ${new Date()}`,
+                    log: `Email with ID ${emailID} was opened at ${new Date()}`,
                     emailID
                 });
+                log(`${emailID}`)
             } catch (error) {
                 console.error("Error occurred while tracking mail:", error.message);
             }

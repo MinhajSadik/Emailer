@@ -35,6 +35,7 @@ class Service {
     generateTrackingPixelUrl(emailID) {
         // return crypto.randomBytes(16).toString('hex');
         return `https://lp-emailer.vercel.app/api/v1/track/open?emailID=${emailID}`;
+        // return `http://localhost:5000/api/v1/track/open?emailID=${emailID}`;
     }
 
     // async mailLog(emailID) {
