@@ -1,10 +1,10 @@
 version: "3"
 services:
-  emailer2:
+  emailer:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: emailer2
+    container_name: emailer
     ports:
       - "1001:1001"
     restart: always
