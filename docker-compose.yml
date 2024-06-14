@@ -1,21 +1,15 @@
 version: "3"
 services:
-      
-  Emailer:
+  emailer:
     build:
+      context: .
       dockerfile: Dockerfile
-      context: ./
     container_name: emailer
-
     ports:
-      - "1001:1001"
+      - "2002:2002"
     restart: always
-    
     volumes:
       - .:/app
-      - /app/emailer/node_modules
-
+      - /app/node_modules
     env_file:
       - .env
-
-      

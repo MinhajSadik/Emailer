@@ -1,5 +1,5 @@
-FROM node 
-WORKDIR /
+FROM node
+WORKDIR /app
 
 COPY package.json .
 
@@ -7,5 +7,5 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 1001
+EXPOSE 2002
 CMD ["npm", "start"]
