@@ -1,12 +1,12 @@
 version: "3"
 services:
-  emailer:
+  emailer2:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: emailer
+    container_name: emailer2
     ports:
-      - "2002:2002"
+      - "1001:1001"
     restart: always
     volumes:
       - .:/app
