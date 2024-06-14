@@ -67,7 +67,7 @@ class Controller {
             try {
                 await MailService.saveMailInfo({
                     log: `Email with ID ${emailID} was opened at ${new Date()}`,
-                    emailID
+                    emailID: emailID,
                 });
                 log(`${emailID}`)
             } catch (error) {
