@@ -1,38 +1,42 @@
-# version: "3"
-# services:
-#   emailer:
-#     build:
-#       context: .
-#       dockerfile: Dockerfile
-#     container_name: emailer
-#     ports:
-#       - "1001:1001"
-#     restart: always
-#     volumes:
-#       - .:/app
-#       - /app/node_modules
-#     env_file:
-#       - .env
-
-version: '3'
+version: "3"
 services:
-  mongo:
-    image: mongo:4.4
-    container_name: mongo
+  emailer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: emailer
     ports:
-      - '27017:27017'
+      - "1001:1001"
+    restart: always
     volumes:
-      - mongo_data:/data/db
-
-  node-app:
-    build: .
-    container_name: node-app
-    ports:
-      - '1001:1001'
+      - .:/app
+      - /app/node_modules
     depends_on:
       - mongo
     environment:
-      - MONGO_URI=mongodb://127.0.0.1:27017/Emailer
+        - MONGO_URI=mongodb://127.0.0.1:27017/Emailer
+    env_file:
+      - .env
 
-volumes:
-  mongo_data:
+# version: '3'
+# services:
+#   emailer:
+#     image: mongo:4.4
+#     container_name: emailer
+#     ports:
+#       - '27017:27017'
+#     volumes:
+#       - mongo_data:/data/db
+
+#   node-app:
+#     build: .
+#     container_name: node-app
+#     ports:
+#       - '1001:1001'
+#     depends_on:
+#       - mongo
+#     environment:
+#       - MONGO_URI=mongodb://127.0.0.1:27017/Emailer
+
+# volumes:
+#   mongo_data:
