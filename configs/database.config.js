@@ -14,14 +14,10 @@ async function connectDB(){
     //   } catch (error) {
     //     console.error(error.message);
     //   }
-    mongoose.connect(DB_URL, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        serverSelectionTimeoutMS: 30000, // Increase timeout to 30 seconds
-    }).then(() => {
-      console.log('Connected to MongoDB');
-    }).catch((err) => {
-      console.error('Failed to connect to MongoDB', err);
+    mongoose.connect(DB_URL).then(() => {
+      console.log(`Database Connected Successfully...`);
+    }).catch((error) => {
+      console.error('Failed to connect to MongoDB', error);
     });
 }
 
