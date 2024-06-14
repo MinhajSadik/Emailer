@@ -2,7 +2,7 @@ import cookieParser from "cookie-parser";
 import cors from 'cors';
 import dotenv from "dotenv";
 import express from "express";
-import connectDB from "./configs/database.config.js";
+// import connectDB from "./configs/database.config.js";
 import { routes } from "./routes/mail.route.js";
 const app = express()
 
@@ -13,7 +13,7 @@ app.use(cors())
 dotenv.config()
 const PORT = process.env.PORT
 
-await connectDB()
+// await connectDB()
 
 app.get("/", (req, res) => {
     res.status(200).json({
