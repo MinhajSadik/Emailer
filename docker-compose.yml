@@ -11,8 +11,6 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
-    depends_on:
-      - mongo
     environment:
         - MONGO_URI=mongodb://127.0.0.1:27017/Emailer
     env_file:
