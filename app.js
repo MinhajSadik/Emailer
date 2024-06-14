@@ -18,7 +18,7 @@ const PORT = process.env.PORT
 app.get("/", (req, res) => {
     res.status(200).json({
         success: true,
-        message: "Do you need to send mail? visit send_mail route",
+        message: "Do you want to send mail? visit send_mail route",
     });
 });
 
