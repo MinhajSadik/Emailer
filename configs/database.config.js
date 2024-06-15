@@ -14,7 +14,10 @@ async function connectDB(){
     //   } catch (error) {
     //     console.error(error.message);
     //   }
-    mongoose.connect(DB_URL).then(() => {
+    mongoose.connect(DB_URL, {
+      serverSelectionTimeoutMS: 5000, // Adjust the timeout as needed
+      connectTimeoutMS: 10000 // Adjust the timeout as needed
+    }).then(() => {
       console.log(`Database Connected Successfully...`);
     }).catch((error) => {
       console.error('Failed to connect to MongoDB', error);
