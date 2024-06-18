@@ -10,14 +10,13 @@ let __filename = fileURLToPath(import.meta.url),
     __dirname = dirname(__filename),
     privateKeyPath = path.join(__dirname, "../keys/private.key");
 
-    
+
 dotenv.config()
 
 // Read the private key file
 let privateKey;
 try {
     privateKey = fs.readFileSync(privateKeyPath, 'utf8');
-    console.log('Private key read successfully.');
 } catch (error) {
     console.error('Error reading private key file:', error);
     process.exit(1);
