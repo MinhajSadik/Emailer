@@ -6,12 +6,22 @@ import dkim from 'nodemailer-dkim';
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 import { MailInfo } from '../models/mail.model.js';
-const __filename = fileURLToPath(import.meta.url),
+let __filename = fileURLToPath(import.meta.url),
     __dirname = dirname(__filename),
-    privateKeyPath = path.join(__dirname, "../keys/private.key"),
-    privateKey = fs.readFileSync(privateKeyPath, "utf8");
+    privateKeyPath = path.join(__dirname, "../keys/private.key");
 
+    
 dotenv.config()
+
+// Read the private key file
+let privateKey;
+try {
+    privateKey = fs.readFileSync(privateKeyPath, 'utf8');
+    console.log('Private key read successfully.');
+} catch (error) {
+    console.error('Error reading private key file:', error);
+    process.exit(1);
+}
 
 class Service {
     async sentMail(payload) {
