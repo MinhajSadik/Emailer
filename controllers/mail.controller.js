@@ -1,4 +1,3 @@
-import { log } from "console";
 import fs from "fs";
 import handlebars from "handlebars";
 import path, { dirname } from "path";
@@ -50,8 +49,7 @@ class Controller {
 
     async trackMail(req, res) {
         const { emailID } = req.query;
-        log(`Email with ID ${emailID} was opened at ${new Date()}`);
-    
+
         const pixel = Buffer.from(
             'R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==',
             'base64'
@@ -69,7 +67,6 @@ class Controller {
                     log: `Email with ID ${emailID} was opened at ${new Date()}`,
                     emailID: emailID,
                 });
-                log(`${emailID}`)
             } catch (error) {
                 console.error("Error occurred while tracking mail:", error.message);
             }
