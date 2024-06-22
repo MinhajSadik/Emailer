@@ -15,108 +15,103 @@ const imapConfig = {
     }
 };
 
+
 function checkEmailDelivery() {
-    console.log(imapConfig);
     const imap = new Imap(imapConfig);
 
-    imap.once('ready', function() {
-
+    imap.once('ready', function () {
         console.log("IMAP connection ready");
 
-        imap.openBox('INBOX', true, async (err, box) => {
-            if (err) {
-                console.error("Error opening INBOX:", err.message);
-                return;
-            }
-
-            console.log("INBOX opened");
-
-            const searchCriteria = [['FROM', 'contact@littleprogrammers.org'], ['SINCE', new Date()]];
-            const fetchOptions = { bodies: '' };
-
-            imap.search(searchCriteria, (err, results) => {
-                if (err) {
-                    console.error("Search error:", err.message);
-                    return;
-                }
-                if (!results || results.length === 0) {
+        openInbox(imap)
+            .then(() => searchEmails(imap, 'INBOX'))
+            .then(results => {
+                if (results.length === 0) {
                     console.log('No emails found in INBOX.');
-                    checkSpamFolder();
-                    return;
+                    return checkSpamFolder(imap);
+                } else {
+                    return fetchEmails(imap, results, 'INBOX');
                 }
-
-                console.log(`Found ${results.length} emails in INBOX`);
-
-                const f = imap.fetch(results, fetchOptions);
-                f.on('message', (msg, seqno) => {
-                    msg.on('body', async (stream, info) => {
-                        const parsed = await simpleParser(stream);
-                        console.log(`Email found in INBOX: ${parsed.subject}`);
-                        imap.end();
-                    });
-                });
-
-                f.once('error', (err) => {
-                    console.log('Fetch error:', err.message);
-                });
-            });
-        });
+            })
+            .catch(err => console.error("Error:", err.message));
     });
 
-    function checkSpamFolder() {
-
-        console.log("Checking Spam folder");
-
-        imap.openBox('[Gmail]/Spam', true, (err, box) => {
-
-            if (err) {
-                console.error("Error opening Spam folder:", err);
-                return;
-            }
-
-            console.log("Spam folder opened");
-
-            const searchCriteria = [['FROM', 'contact@littleprogrammers.org'], ['SINCE', new Date()]];
-            const fetchOptions = { bodies: '' };
-
-            imap.search(searchCriteria, (err, results) => {
-                if (err) {
-                    console.error("Search error:", err.message);
-                    return;
-                }
-                if (!results || results.length === 0) {
-                    console.log('No emails found in Spam folder.');
-                    imap.end();
-                    return;
-                }
-
-                console.log(`Found ${results.length} emails in Spam folder`);
-
-                const f = imap.fetch(results, fetchOptions);
-                f.on('message', (msg, seqno) => {
-                    msg.on('body', async (stream, info) => {
-                        const parsed = await simpleParser(stream);
-                        console.log(`Email found in Spam folder: ${parsed.subject}`);
-                        imap.end();
-                    });
-                });
-
-                f.once('error', (err) => {
-                    console.log('Fetch error:', err.message);
-                });
-            });
-        });
-    }
-
-    imap.once('error', function(err) {
+    imap.once('error', function (err) {
         console.log("IMAP error:", err.message);
     });
 
-    imap.once('end', function() {
+    imap.once('end', function () {
         console.log('Connection ended');
     });
 
     imap.connect();
+}
+
+function openInbox(imap) {
+    return new Promise((resolve, reject) => {
+        imap.openBox('INBOX', true, (err, box) => {
+            if (err) return reject(err);
+            console.log("INBOX opened");
+            resolve(box);
+        });
+    });
+}
+
+function searchEmails(imap, folder) {
+    const searchCriteria = [['FROM', 'contact@littleprogrammers.org'], ['SINCE', new Date(Date.now() - 24 * 60 * 60 * 1000)]];
+    return new Promise((resolve, reject) => {
+        console.log(`Searching emails in ${folder} with criteria:`, searchCriteria);
+        imap.search(searchCriteria, (err, results) => {
+            if (err) return reject(err);
+            console.log(`Search results in ${folder}:`, results);
+            resolve(results);
+        });
+    });
+}
+
+function fetchEmails(imap, results, folder) {
+    return new Promise((resolve, reject) => {
+        const fetchOptions = { bodies: '' };
+        const f = imap.fetch(results, fetchOptions);
+
+        f.on('message', (msg, seqno) => {
+            console.log(`Fetching email ${seqno} from ${folder}`);
+            msg.on('body', async (stream, info) => {
+                const parsed = await simpleParser(stream);
+                console.log(`Email found in ${folder}: ${parsed.subject}`);
+            });
+        });
+
+        f.once('error', (err) => {
+            console.log('Fetch error:', err.message);
+            reject(err);
+        });
+
+        f.once('end', () => {
+            console.log(`Finished fetching emails from ${folder}`);
+            imap.end();
+            resolve();
+        });
+    });
+}
+
+function checkSpamFolder(imap) {
+    return new Promise((resolve, reject) => {
+        imap.openBox('[Gmail]/Spam', true, (err, box) => {
+            if (err) return reject(err);
+            console.log("Spam folder opened");
+
+            searchEmails(imap, '[Gmail]/Spam')
+                .then(results => {
+                    if (results.length === 0) {
+                        console.log('No emails found in Spam folder.');
+                        imap.end();
+                    } else {
+                        return fetchEmails(imap, results, '[Gmail]/Spam');
+                    }
+                })
+                .catch(err => reject(err));
+        });
+    });
 }
 
 export default checkEmailDelivery;

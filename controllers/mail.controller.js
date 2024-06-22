@@ -3,7 +3,7 @@ import handlebars from "handlebars";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 import { MailService } from "../services/mail.service.js";
-import { scheduleEmailDeliveryCheck } from "../utils/mail.mailschedule.js";
+import { scheduleEmailDeliveryCheck } from "../utils/mail.mailSchedule.js";
 import { chunkArray } from "../utils/mail.util.js";
 const __filename = fileURLToPath(import.meta.url),
     __dirname = dirname(__filename),
